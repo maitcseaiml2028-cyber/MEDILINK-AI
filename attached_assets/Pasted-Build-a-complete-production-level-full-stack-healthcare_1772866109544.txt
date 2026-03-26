@@ -1,0 +1,196 @@
+Build a complete production-level full-stack healthcare platform called "MEDLINK-AI". The system should be a modern digital healthcare record and appointment management platform that allows patients, doctors, and administrators to securely manage medical records, appointments, and digital prescriptions.
+
+The project must be fully functional and include frontend, backend, database, authentication, role management, and modern UI design.
+
+TECH STACK
+
+Frontend:
+- React.js (Vite)
+- Tailwind CSS
+- Axios
+- React Router
+- React Query or Context API for state management
+- QR Code generator and QR scanner library
+- Chart.js or Recharts for dashboard analytics
+
+Backend:
+- Node.js
+- Express.js
+- MVC architecture
+- RESTful API
+
+Database:
+- MongoDB with Mongoose
+
+Authentication & Security:
+- JWT authentication
+- Role-based access control (Patient, Doctor, Admin)
+- Password hashing using bcrypt
+- Environment variables for secrets
+- Input validation and secure API routes
+
+Cloud / Storage:
+- File upload system using Multer
+- Store medical documents (reports, prescriptions)
+- Prepare structure for cloud storage integration
+
+AI Integration:
+- AI medical summary generator for patient records
+- AI chatbot assistant for doctors
+- OCR system for extracting text from uploaded prescriptions
+
+CORE MODULES
+
+1. Landing Website
+- Modern healthcare landing page
+- Features section
+- About MEDLINK-AI
+- Login / Register buttons
+- Clean UI with Tailwind
+
+2. Authentication System
+- Patient registration
+- Doctor registration
+- Admin login
+- Secure JWT login
+- Role-based dashboards
+
+3. Patient Dashboard
+Features:
+- View profile and Health ID
+- Automatically generate Unique Health ID
+- Upload prescriptions and lab reports
+- OCR to extract text from documents
+- View complete medical history timeline
+- Generate and download personal QR code
+- QR code represents patient health identity
+- Grant or revoke doctor access to medical records
+- Book online appointments with doctors
+- View appointment calendar
+- View upcoming and past appointments
+- Download prescriptions
+- Emergency health information section
+
+4. Doctor Dashboard
+Features:
+- Doctor profile and specialization
+- View and manage patient appointments
+- Accept or reject appointment requests
+- Scan patient QR code to access records
+- Search patients using Health ID
+- Access medical records with permission
+- View AI-generated patient summary
+- Upload digital prescriptions
+- Write treatment notes
+- Patient visit history
+
+5. Admin Dashboard
+Features:
+- Manage doctors
+- Approve doctor registrations
+- Manage patients
+- Monitor system activity
+- Manage appointments
+- View analytics dashboards
+- System logs
+
+6. Appointment System
+- Patients can book appointments
+- Doctors can manage schedule
+- Appointment calendar view
+- Status: pending / approved / completed
+- Appointment notifications
+
+7. Medical Records Management
+- Upload lab reports
+- Upload prescriptions
+- Document storage
+- Medical history timeline
+- Secure doctor access permissions
+
+8. QR Health Identity
+- Each patient has a QR code
+- QR contains Health ID
+- Doctors scan QR to request access
+- Secure record viewing
+
+9. AI Features
+- AI medical summary of patient records
+- AI chatbot assistant for doctors
+- Suggest possible insights from records
+(Mock AI allowed if API key not provided)
+
+10. Video Consultation (Optional Structure)
+- Add simple video consultation module
+- Use WebRTC or placeholder structure
+
+BACKEND STRUCTURE
+
+Create folders:
+
+/server
+  /controllers
+  /routes
+  /models
+  /middleware
+  /services
+  /utils
+
+MongoDB Schemas:
+- User
+- PatientProfile
+- DoctorProfile
+- MedicalRecord
+- Prescription
+- Appointment
+- AccessPermission
+- Notifications
+
+Frontend Structure:
+
+/client
+  /components
+  /pages
+  /layouts
+  /services
+  /context
+  /hooks
+
+Pages:
+- Landing Page
+- Login Page
+- Register Page
+- Patient Dashboard
+- Doctor Dashboard
+- Admin Dashboard
+- Appointment Booking Page
+- Medical Records Page
+- Profile Page
+
+EXTRA FEATURES
+
+- Dashboard analytics charts
+- Notifications system
+- Search doctors by specialization
+- Medical record filtering
+- Dark mode support
+- Responsive design
+- Loading states and error handling
+
+DELIVERABLES
+
+Generate:
+- Complete folder structure
+- Working frontend and backend
+- API routes
+- MongoDB models
+- Example data
+- .env configuration
+- Clear instructions to run the project
+- Ensure frontend connects to backend properly
+
+The application should run locally using:
+npm install
+npm run dev
+
+Ensure the UI looks modern and professional like a real healthcare platform.
