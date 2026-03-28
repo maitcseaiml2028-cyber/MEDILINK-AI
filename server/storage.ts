@@ -344,6 +344,39 @@ export class DatabaseStorage {
     const [h] = await db.update(hospitals).set(data).where(eq(hospitals.id, id)).returning();
     return h;
   }
+  async getAdminStats(): Promise<{ patients: number; doctors: number; hospitals: number; totalUsers: number }> {
+    const allUsers = await db.select().from(users);
+    const patientsCount = allUsers.filter(u => u.role === 'patient').length;
+    const doctorsCount = allUsers.filter(u => u.role === 'doctor').length;
+    const hospitalsCount = allUsers.filter(u => u.role === 'hospital').length;
+    return {
+      patients: patientsCount,
+      doctors: doctorsCount,
+      hospitals: hospitalsCount,
+      totalUsers: allUsers.length
+    };
+  }
+
+  async getUsersWithProfiles(): Promise<any[]> {
+    const allUsers = await db.select().from(users);
+    const result = [];
+    for (const u of allUsers) {
+      if (u.role === 'patient') {
+        const p = await this.getPatientByUserId(u.id);
+        result.push({ ...u, patient: p });
+      } else if (u.role === 'doctor') {
+        const d = await this.getDoctorByUserId(u.id);
+        result.push({ ...u, doctor: d });
+      } else if (u.role === 'hospital') {
+        const h = await this.getHospitalByUserId(u.id);
+        result.push({ ...u, hospital: h });
+      } else {
+        result.push(u);
+      }
+    }
+    return result;
+  }
 }
+
 
 export const storage = new DatabaseStorage();

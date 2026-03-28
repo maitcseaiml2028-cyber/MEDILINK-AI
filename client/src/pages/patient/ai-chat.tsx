@@ -12,7 +12,7 @@ type Message = { role: "user" | "ai"; content: string };
 export default function PatientAiChat() {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
-        { role: "ai", content: "Hello! I'm your MediLink Health Assistant 🩺\nI can help you understand your medical records, answer health questions, and provide general wellness guidance.\n\nNote: Always consult your doctor for medical decisions." }
+        { role: "ai", content: "Hello! I'm your MediLink Health Intelligence Assistant 🩺\nI've synchronized with your medical records and prescriptions. Ask me anything about your health journey!\n\nNote: This analysis is based on your local data. Always consult your doctor for medical decisions." }
     ]);
 
     const chatMutation = useMutation({
@@ -32,7 +32,12 @@ export default function PatientAiChat() {
         chatMutation.mutate(msg);
     };
 
-    const quickTopics = ["What does my blood test result mean?", "How to manage diabetes daily?", "When should I see a doctor for a headache?", "What does my AI health summary say?"];
+    const quickTopics = [
+        "What do my medical records say?", 
+        "Show my active prescriptions", 
+        "Check my emergency blood group", 
+        "Summarize my health profile"
+    ];
 
     return (
         <AppLayout>

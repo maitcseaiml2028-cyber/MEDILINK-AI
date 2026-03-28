@@ -117,7 +117,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         { title: "Emergency Treatment", url: "/hospital/emergency-treatment", icon: AlertTriangle },
       ];
     } else {
-      return [{ title: "Admin Dashboard", url: "/admin/dashboard", icon: Activity }];
+      return [{ title: "System Admin", url: "/admin/dashboard", icon: ShieldCheck }];
     }
   };
 

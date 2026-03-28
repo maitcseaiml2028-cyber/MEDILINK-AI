@@ -126,7 +126,7 @@ export function HealthJourney({ patientId }: HealthJourneyProps) {
                 console.error("Invalid date for event:", evt);
             }
             const dayStr = !dateObj ? "unknown" : format(dateObj, "yyyy-MM-dd");
-            const key = evt.appointmentId ? `apt-${evt.appointmentId}` : `day-${dayStr}`;
+            const key = `day-${dayStr}`;
 
             if (!sessionMap.has(key)) {
                 sessionMap.set(key, {

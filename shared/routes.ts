@@ -192,6 +192,20 @@ export const api = {
         200: z.object({ text: z.string() }),
       }
     }
+  },
+  admin: {
+    stats: {
+      method: 'GET' as const,
+      path: '/api/admin/stats' as const,
+      responses: {
+        200: z.object({
+          patients: z.number(),
+          doctors: z.number(),
+          hospitals: z.number(),
+          totalUsers: z.number(),
+        }),
+      }
+    }
   }
 };
 

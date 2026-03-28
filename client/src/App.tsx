@@ -99,10 +99,12 @@ function Router() {
       <ProtectedRoute path="/hospital/emergency-treatment" component={HospitalEmergencySessions} />
       <ProtectedRoute path="/hospital/emergency-treatment/:tempId" component={HospitalTempTreatment} />
 
-      {/* Legacy / Admin */}
-      <ProtectedRoute path="/hospital-dashboard" component={HospitalDashboard} />
-      <ProtectedRoute path="/admin-dashboard" component={AdminDashboard} />
+      {/* Admin */}
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+
+      {/* Legacy */}
+      <ProtectedRoute path="/hospital-dashboard" component={HospitalDashboard} />
+
 
       {/* Public Emergency Route (QR code scan - no auth needed) */}
       <Route path="/emergency" component={EmergencyView} />

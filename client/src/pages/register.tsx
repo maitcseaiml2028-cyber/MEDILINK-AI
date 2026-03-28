@@ -36,6 +36,13 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (role === "patient" && !faceData) {
+      setError("Face verification is required for patients. Please enable camera and complete the scan.");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
@@ -141,10 +148,10 @@ export default function RegisterPage() {
                     <div className="mb-4">
                       <h4 className="text-sm font-bold text-teal-900 mb-1 flex items-center gap-2">
                         <ScanFace className="w-4 h-4 text-teal-600" />
-                        Face Verification (Optional)
+                        Face Verification <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full uppercase ml-2">Required</span>
                       </h4>
                       <p className="text-xs text-slate-500">
-                        Scan your face securely to allow rapid identity verification during emergencies. Your data is NEVER shared.
+                        Scan your face securely to allow rapid identity verification during emergencies.
                       </p>
                     </div>
                     <FaceCaptureWidget 

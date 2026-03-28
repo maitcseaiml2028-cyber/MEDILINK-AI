@@ -16,14 +16,6 @@ export function useCreateAppointment() {
 
   return useMutation({
     mutationFn: async (data: any) => {
-      // 1. First automatically grant the hospital access to the patient's records
-      try {
-        await apiRequest("POST", "/api/access/grant", { hospitalId: data.hospitalId });
-      } catch (e) {
-        console.warn("Could not automatically grant access (might already be granted)", e);
-      }
-
-      // 2. Then proceed to book the appointment
       const res = await apiRequest("POST", api.appointments.create.path, data);
       return res.json();
     },

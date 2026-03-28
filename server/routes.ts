@@ -298,6 +298,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const patient = await storage.getPatientByUserId(req.user!.userId);
       if (!patient) return res.status(403).json({ message: "Patient access only" });
 
+      // Ensure the patient has granted access to this hospital before booking
+      const access = await storage.getHospitalPatientAccess(patient.id, input.hospitalId);
+      if (!access || access.accessStatus !== 'active') {
+        return res.status(403).json({ 
+          message: "Access denied: You must grant this hospital access to your records before booking an appointment." 
+        });
+      }
+
       // Prevent booking in the past
       try {
         const aptDateTime = new Date(`${input.date}T${input.time}`);
@@ -753,7 +761,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const patient = await storage.getPatientByUserId(req.user!.userId);
       if (!patient) return res.status(404).json({ message: "Patient record not found" });
 
-      const perm = await storage.approveAccess(patient.id, hospitalId);
+      const perm = await storage.preGrantAccess({ patientId: patient.id, hospitalId });
       res.json({ status: 'active', permission: perm });
     } catch (err) {
       res.status(500).json({ message: "Failed to grant access" });
@@ -917,13 +925,69 @@ AI Assessment: Based on available records, patient appears to be managed appropr
   app.post(api.ai.chat.path, authenticate, async (req: AuthRequest, res) => {
     try {
       const { message } = req.body;
-      const reply = `Thank you for your query: "${message}".
-Based on medical guidelines, here is some general health information:
-• Always consult your doctor for personalized medical advice
-• Maintain regular health check-ups
-• Stay hydrated and follow a balanced diet
-• If symptoms persist, seek immediate medical attention
-Note: This is AI-generated information and should not replace professional medical advice.`;
+      const { userId, role } = req.user!;
+      const msgLower = message.toLowerCase();
+
+      // Only patients can use the health chat for their own data
+      if (role !== "patient") {
+        return res.json({ reply: "As an AI Health Assistant, I'm currently configured to help patients discuss their personal health records. Support for doctors/hospitals is coming soon!" });
+      }
+
+      const patient = await storage.getPatientByUserId(userId);
+      if (!patient) return res.status(404).json({ message: "Patient profile not found" });
+
+      const records = await storage.getMedicalRecordsByPatient(patient.id);
+      const prescriptions = await storage.getPrescriptionsByPatient(patient.id);
+      const ep = await storage.getEmergencyProfile(patient.id);
+
+      let dataFound = false;
+      let reply = `Hello! Based on your MediLink Health Records, here is what I found:\n\n`;
+
+      // 1. Check for Blood Group / Emergency Info
+      if (msgLower.includes("blood") || msgLower.includes("emergency") || msgLower.includes("allergy") || msgLower.includes("profile")) {
+        dataFound = true;
+        reply += `📌 **Emergency Profile:**\n- Blood Group: ${ep?.bloodGroup || "Not specified"}\n- Allergies: ${ep?.allergies || "None recorded"}\n- Chronic Conditions: ${ep?.diseases || "None recorded"}\n\n`;
+      }
+
+      // 2. Check for Prescriptions / Medications
+      if (msgLower.includes("medicine") || msgLower.includes("prescription") || msgLower.includes("medication") || msgLower.includes("take")) {
+        dataFound = true;
+        if (prescriptions.length > 0) {
+          reply += `💊 **Active Prescriptions:**\n`;
+          prescriptions.slice(0, 3).forEach(p => {
+            reply += `- ${p.medications} (${p.instructions || "Follow doctor's advice"})\n`;
+          });
+          if (prescriptions.length > 3) reply += `...and ${prescriptions.length - 3} more.\n`;
+        } else {
+          reply += `💊 I don't see any active prescriptions in your records. If you are taking medication, please ensure your doctor uploads the prescription.\n`;
+        }
+        reply += `\n`;
+      }
+
+      // 3. Check for Medical History / Records
+      if (msgLower.includes("record") || msgLower.includes("history") || msgLower.includes("report") || msgLower.includes("test")) {
+        dataFound = true;
+        if (records.length > 0) {
+          reply += `📂 **Key Medical Records:**\n`;
+          records.sort((a,b) => (b.id - a.id)).slice(0, 3).forEach(r => {
+            reply += `- ${r.title} (${r.type})\n`;
+          });
+          if (records.length > 3) reply += `...and ${records.length - 3} more records.\n`;
+        } else {
+          reply += `📂 Your medical record history is currently empty. Visit a hospital to start building your health journey.\n`;
+        }
+        reply += `\n`;
+      }
+
+      // Default / General Advice if no specific data was requested or found
+      if (!dataFound) {
+        reply = `I've analyzed your health data! To provide a better answer, you can ask about your "blood group", "prescriptions", or "medical records".\n\n`;
+        reply += `Currently, I see you have **${records.length}** records and **${prescriptions.length}** active prescriptions on file.\n\n`;
+        reply += `*General Tip: Based on medical guidelines, maintain a balanced diet and stay hydrated!*`;
+      }
+
+      reply += `\n\n**Note:** This is a local analysis of your data. Always consult a healthcare professional for specific medical advice.`;
+
       res.json({ reply });
     } catch (err) {
       res.status(500).json({ message: "Failed to process chat" });
@@ -1246,6 +1310,29 @@ Note: This is AI-generated information and should not replace professional medic
       res.json(enriched);
     } catch (err) {
       res.status(500).json({ message: "Failed to fetch hospital visits" });
+    }
+  });
+
+  // ===================== ADMIN =====================
+  app.get("/api/admin/stats", authenticate, async (req: AuthRequest, res) => {
+    try {
+      if (req.user!.role !== "admin") return res.status(403).json({ message: "Admin access only" });
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  app.get("/api/users", authenticate, async (req: AuthRequest, res) => {
+    try {
+      if (req.user!.role !== "admin") return res.status(403).json({ message: "Admin access only" });
+      const detailedUsers = await storage.getUsersWithProfiles();
+      // Remove passwords before sending
+      const sanitized = detailedUsers.map(({ password: _, ...u }) => u);
+      res.json(sanitized);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 
