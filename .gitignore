@@ -1,0 +1,16 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+.env
+
+# Local Environment and Agent Caches
+.local/
+.config/
+.agents/
+
+# Project Specific Unnecessary Files
+attached_assets/
+data.db
